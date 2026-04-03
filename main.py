@@ -8,10 +8,11 @@ from probe_row import ProbeRow
 
 app = FastAPI()
 
-@app.get("/predict")
+@app.post("/predict")
 def predict(row: ProbeRow):
     model = app.state.MODEL
-    input = np.array([row.rtt_avg, row.rtt_median, row.flood_flag])
+    input = np.array([row.rtt_avg, row.rtt_median, float(row.flood_flag)])
+    input = input.astype("float32")
     input = input.reshape(1,-1)
     res = model.run(["output_probability"], {"input": input})
     proba = res[0]
