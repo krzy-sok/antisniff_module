@@ -1,7 +1,7 @@
 from onnxruntime import InferenceSession
 import numpy as np
 
-def load_model():
+def load_model() -> InferenceSession:
     with open("model.onnx", "rb") as f:
         onx = f.read()
     return InferenceSession(onx, providers=["CPUExecutionProvider"])

@@ -3,6 +3,7 @@ import numpy as np
 from load_model import load_model
 from random import random
 import uvicorn
+from onnxruntime import InferenceSession
 
 from probe_row import ProbeRow
 
@@ -10,12 +11,14 @@ app = FastAPI()
 
 @app.post("/predict")
 def predict(row: ProbeRow):
-    model = app.state.MODEL
+    print(f"arguments:\n   avg: {row.rtt_avg}\n   mean: {row.rtt_median},\n   flood: {row.flood_flag}")
+    model: InferenceSession = app.state.MODEL
     input = np.array([row.rtt_avg, row.rtt_median, float(row.flood_flag)])
     input = input.astype("float32")
     input = input.reshape(1,-1)
     res = model.run(["output_probability"], {"input": input})
     proba = res[0]
+    print(f"res:\n {res}\n")
     return proba[0][1]
 
 def main():
