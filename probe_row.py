@@ -4,3 +4,4 @@ class ProbeRow(BaseModel):
     rtt_avg: float
     rtt_median: float
     flood_flag: int
+    max_diff: float

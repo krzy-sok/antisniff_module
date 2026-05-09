@@ -11,9 +11,9 @@ app = FastAPI()
 
 @app.post("/predict")
 def predict(row: ProbeRow):
-    print(f"arguments:\n   avg: {row.rtt_avg}\n   mean: {row.rtt_median},\n   flood: {row.flood_flag}")
+    print(f"arguments:\n   avg: {row.rtt_avg}\n   mean: {row.rtt_median},\n   flood: {row.flood_flag}\n, max_diff: {row.max_diff}")
     model: InferenceSession = app.state.MODEL
-    input = np.array([row.rtt_avg, row.rtt_median, float(row.flood_flag)])
+    input = np.array([row.rtt_avg, row.rtt_median, float(row.flood_flag), row.max_diff])
     input = input.astype("float32")
     input = input.reshape(1,-1)
     res = model.run(["output_probability"], {"input": input})
