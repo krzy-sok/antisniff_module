@@ -5,3 +5,5 @@ class ProbeRow(BaseModel):
     rtt_median: float
     flood_flag: int
     max_diff: float
+    device: str
+    ip: str
