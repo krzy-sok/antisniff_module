@@ -5,7 +5,7 @@ run:
 
 test:
 	@set -e; \
-	uv run main.py & \
+	uv run main.py --log-level error --no-access-log > /dev/null 2>&1 & \
 	PID=$$!; \
 	trap "kill $$PID" EXIT; \
 	echo "Running with PID $$PID"; \
