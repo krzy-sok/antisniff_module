@@ -1,7 +1,9 @@
 from helpers.probe_row import ProbeRow
 from onnxruntime import InferenceSession
 import numpy as np
+import logging
 
+logger = logging.getLogger("labeler")
 class Labeler:
     label_map = {}
 
@@ -19,7 +21,7 @@ class Labeler:
         input = input.reshape(1,-1)
         res = self.label_model.run(["output_label"], {"input": input})
 
-        print(res[0].tolist()[0])
+        logger.debug(res[0].tolist()[0])
         if row.device not in self.label_map.keys():
             self.label_map.update({row.device: {row.ip : res[0].tolist()[0]}})
         else:
