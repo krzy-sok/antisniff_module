@@ -18,7 +18,7 @@ def send_requests(x_data):
         }
         res = requests.post("http://localhost:8001/predict", json= json)
         data = res.json()
-        y_pred_label.append(data["label"])
+        y_pred_label.append(data["computer_type"])
         y_pred_sniff.append(data["sniffing"])
     return y_pred_label, y_pred_sniff
 
