@@ -24,7 +24,7 @@ def predict(row: ProbeRow):
         app.state.LABELER.label_machine(row)
     label = app.state.LABELER.get_label(row.device, row.ip)
     if label is None:
-        return { "sniffing": -1.0, "label": "unknown"}
+        return { "sniffing": -1.0, "computer_type": "unknown"}
 
     if label == "laptop":
         model: SnifferClassifierContext = app.state.MODEL_LAPTOP
