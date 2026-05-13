@@ -13,12 +13,12 @@ app = FastAPI()
 logger = logging.getLogger("antisniff-main")
 @app.post("/predict")
 def predict(row: ProbeRow):
-    logger.info(f"""arguments:\n
-            avg: {row.rtt_avg}\n
-            mean: {row.rtt_median},\n
-            flood: {row.flood_flag},\n
-            max_diff: {row.max_diff},\n
-            device: {row.device},\n
+    logger.info(f"""arguments:
+            avg: {row.rtt_avg}
+            mean: {row.rtt_median},
+            flood: {row.flood_flag},
+            max_diff: {row.max_diff},
+            device: {row.device},
             ip: {row.ip}""")
     if row.flood_flag == 0:
         app.state.LABELER.label_machine(row)
@@ -32,16 +32,18 @@ def predict(row: ProbeRow):
         model: SnifferClassifierContext = app.state.MODEL_PC
 
     probability  = model.classify(row)
-    logger.info(f"res:\n {probability}\n")
+    logger.info(f"sniffing: {probability}, computer_type: {label}")
     return { "sniffing": probability, "computer_type": label}
 
 def main():
     flood_only = os.getenv("ANTISNIFFER_FLOOD_ONLY", True)
-    # flood_only = False
     app.state.MODEL_LAPTOP = SnifferClassifierContext(flood_only, "laptop_model")
     app.state.MODEL_PC = SnifferClassifierContext(flood_only, "pc_model")
     app.state.LABELER = Labeler()
-    uvicorn.run(app, host="0.0.0.0", port = 8001)
+    logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s | %(levelname)-8s | "
+                           "%(module)s:%(funcName)s:%(lineno)d - %(message)s\n")
+    uvicorn.run(app, host="0.0.0.0", port = 8001,  access_log=False,)
 
 if __name__ == "__main__":
     main()
