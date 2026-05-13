@@ -33,7 +33,7 @@ def predict(row: ProbeRow):
 
     probability  = model.classify(row)
     logger.info(f"res:\n {probability}\n")
-    return { "sniffing": probability, "label": label}
+    return { "sniffing": probability, "computer_type": label}
 
 def main():
     flood_only = os.getenv("ANTISNIFFER_FLOOD_ONLY", True)
