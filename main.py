@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-import numpy as np
-from helpers.load_model import load_model
-from random import random
 import uvicorn
-from onnxruntime import InferenceSession
 import os
+import logging
 
 from helpers.labeler import Labeler
 from helpers.probe_row import ProbeRow
@@ -12,15 +9,17 @@ from helpers.sniffer_classifier_context import SnifferClassifierContext
 
 app = FastAPI()
 
+
+logger = logging.getLogger("antisniff-main")
 @app.post("/predict")
 def predict(row: ProbeRow):
-    # print(f"""arguments:\n
-    #         avg: {row.rtt_avg}\n
-    #         mean: {row.rtt_median},\n
-    #         flood: {row.flood_flag},\n
-    #         max_diff: {row.max_diff},\n
-    #         device: {row.device},\n
-    #         ip: {row.ip}""")
+    logger.debug(f"""arguments:\n
+            avg: {row.rtt_avg}\n
+            mean: {row.rtt_median},\n
+            flood: {row.flood_flag},\n
+            max_diff: {row.max_diff},\n
+            device: {row.device},\n
+            ip: {row.ip}""")
     if row.flood_flag == 0:
         app.state.LABELER.label_machine(row)
     label = app.state.LABELER.get_label(row.device, row.ip)
@@ -33,7 +32,7 @@ def predict(row: ProbeRow):
         model: SnifferClassifierContext = app.state.MODEL_PC
 
     probability  = model.classify(row)
-    print(f"res:\n {probability}\n")
+    logger.info(f"res:\n {probability}\n")
     return { "sniffing": probability, "label": label}
 
 def main():
@@ -42,7 +41,7 @@ def main():
     app.state.MODEL_LAPTOP = SnifferClassifierContext(flood_only, "laptop_model")
     app.state.MODEL_PC = SnifferClassifierContext(flood_only, "pc_model")
     app.state.LABELER = Labeler()
-    uvicorn.run(app, host="0.0.0.0", port = 8001)
+    uvicorn.run(app, host="0.0.0.0", port = 8001, log_level="error", access_log=False)
 
 if __name__ == "__main__":
     main()
