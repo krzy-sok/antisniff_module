@@ -13,7 +13,7 @@ app = FastAPI()
 logger = logging.getLogger("antisniff-main")
 @app.post("/predict")
 def predict(row: ProbeRow):
-    logger.debug(f"""arguments:\n
+    logger.info(f"""arguments:\n
             avg: {row.rtt_avg}\n
             mean: {row.rtt_median},\n
             flood: {row.flood_flag},\n
@@ -41,7 +41,7 @@ def main():
     app.state.MODEL_LAPTOP = SnifferClassifierContext(flood_only, "laptop_model")
     app.state.MODEL_PC = SnifferClassifierContext(flood_only, "pc_model")
     app.state.LABELER = Labeler()
-    uvicorn.run(app, host="0.0.0.0", port = 8001, log_level="error", access_log=False)
+    uvicorn.run(app, host="0.0.0.0", port = 8001)
 
 if __name__ == "__main__":
     main()
